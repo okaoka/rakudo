@@ -684,29 +684,21 @@ my class Range is Cool does Iterable does Positional {
           if $!min === -Inf || $!max === Inf;
 
         my $range = $!max - $!min;
-        fail "Can only get a random value if the range is positive"
-          unless $range > 0;
+        my $value = $range.rand;
+        return $value + $!min unless $!excludes-min || $!excludes-max;
 
-
-        my $value = 0;
-        if $!excludes-min || $!excludes-max {
+        if $value == 0 || $value == $range {
             if $!excludes-min {
                 if $!excludes-max {
-                    $value = $range.rand
-                        while $value+$!min == $!min || $value+$!min == $!max;
+                    $value = $range.rand while $value == 0 || $value == $range;
                 }
                 else {
-                    $value = $range.rand while $value+$!min == $!min;
+                    $value = $range.rand while $value == 0;
                 }
             }
             else {  # $!excludes-max
-                repeat {
-                    $value = $range.rand
-                } while $value+$!min == $!max;
+                $value = $range.rand while $value == $range;
             }
-        }
-        else {
-            $value = $range.rand
         }
         $value + $!min;
     }
